@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<title>Radar Chart</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+<link rel="stylesheet" href="radar-chart.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<style>
+.radar-chart .area {
+  fill-opacity: 0.1;
+}
+.radar-chart.focus .area {
+  fill-opacity: 0.3;
+}
+.radar-chart.focus .area.focused {
+  fill-opacity: 0.9;
+}/*
+.area.Harvard, .Harvard .circle{
+  fill: #8EA604;
+  stroke: #8EA604;
+}
+.legend-tiles.Harvard{
+  fill: #8EA604;
+  stroke: none;
+}
+.area.CalTech, .CalTech .circle{
+  fill: #EC9F05;
+  stroke: #EC9F05;
+}
+.legend-tiles.CalTech{
+  fill: #EC9F05;
+  stroke: none;
+}
+.area.MIT, .MIT .circle{
+	fill: #BF3100;
+	stroke: #BF3100;
+}
+.legend-tiles.MIT{
+  fill: #BF3100;
+  stroke: none;
+}
+/*
+.area.Stanford, .Stanford .circle {
+	fill: #247BA0;
+	stroke: none;
+}
+.area.Princeton, .Princeton .circle {
+	fill: #70C1B3;
+	stroke: none;
+}*/
+</style>
+
+<script src="http://d3js.org/d3.v3.js"></script>
+<script src="radar-chart.js"></script>
+
+<body>
+  <div>
+    <p>Select year:
+      <select id="selection">
+        <option value="--">--</option>
+        <option value="2011">2011</option>
+        <option value="2012">2012</option>
+        <option value="2013">2013</option>
+        <option value="2014">2014</option>
+        <option value="2015">2015</option>
+        <option value="2016">2016</option>
+      </select>
+    </p>
+    <p>Select college:
+    <select id="college1"></select>
+    </p>
+    <p>Select college:
+    <select id="college2"></select>
+    </p>
+    <p>Select college:
+    <select id="college3"></select>
+    </p>
+  </div>
+</body>
+
+<script>
+RadarChart.defaultConfig.color = function() {};
+RadarChart.defaultConfig.radius = 3;
+RadarChart.defaultConfig.w = 700;
+RadarChart.defaultConfig.h = 700;
+</script>
+
+<span></span>
+
+<script>
+// Code by Proxima
+var data_2011 = [];
+var data_2012 = [];
+var data_2013 = [];
+var data_2014 = [];
+var data_2015 = [];
+var data_2016 = [];
+var u_names = [];
+
+d3.csv('data.csv', function(error, data) {
+  data.forEach(function(d) {
+    u_names.push(d.university_name);
+    // Loop through and create the variables
+    if(d.year == '2011') {
+      data_2011.push({className: d.university_name
+                      ,axes:[
+                        {axis:"ranking", value:d.world_rank},
+                        {axis:"studentstaff-ratio", value:d.student_staff_ratio},
+                        {axis: "research", value: d.research},  
+                        {axis: "teaching", value: d.teaching},  
+                        {axis: "citations", value: d.citations}
+                      ]})
+    }
+    else if (d.year == '2012') {
+      data_2012.push({className: d.university_name
+                      ,axes:[
+                        {axis:"ranking", value:d.world_rank},
+                        {axis:"studentstaff-ratio", value:d.student_staff_ratio},
+                        {axis: "research", value: d.research},  
+                        {axis: "teaching", value: d.teaching},  
+                        {axis: "citations", value: d.citations}
+                      ]})
+    }
+    else if (d.year == '2013') {
+      data_2013.push({className: d.university_name
+                      ,axes:[
+                        {axis:"ranking", value:d.world_rank},
+                        {axis:"studentstaff-ratio", value:d.student_staff_ratio},
+                        {axis: "research", value: d.research},  
+                        {axis: "teaching", value: d.teaching},  
+                        {axis: "citations", value: d.citations}
+                      ]})
+    }
+    else if (d.year == '2014') {
+      data_2014.push({className: d.university_name
+                      ,axes:[
+                        {axis:"ranking", value:d.world_rank},
+                        {axis:"studentstaff-ratio", value:d.student_staff_ratio},
+                        {axis: "research", value: d.research},  
+                        {axis: "teaching", value: d.teaching},  
+                        {axis: "citations", value: d.citations}
+                      ]})
+    }
+    else if (d.year == '2015') {
+      data_2015.push({className: d.university_name
+                      ,axes:[
+                        {axis:"ranking", value:d.world_rank},
+                        {axis:"studentstaff-ratio", value:d.student_staff_ratio},
+                        {axis: "research", value: d.research},  
+                        {axis: "teaching", value: d.teaching},  
+                        {axis: "citations", value: d.citations}
+                      ]})
+    }
+    else if (d.year == '2016') {
+      data_2016.push({className: d.university_name
+                      ,axes:[
+                        {axis:"ranking", value:d.world_rank},
+                        {axis:"studentstaff-ratio", value:d.student_staff_ratio},
+                        {axis: "research", value: d.research},  
+                        {axis: "teaching", value: d.teaching},  
+                        {axis: "citations", value: d.citations}
+                      ]})
+    }
+  });
+});
+var universities = $.unique(u_names);
+
+  $.fn.populate = function() {
+  var $this = $(this);
+  $this.append('<option value="foo">foo</option>');
+  //console.log(universities);
+  universities.forEach(function(d) {
+    $this.append('<option value="">' + '$(this).text()' + '</option>');
+    $this.append('<option value="">' + d + '</option>');
+  });
+}
+$('#college1').populate();
+
+// End of code by Proxima
+/*
+data_2011 = [
+  {
+    className: 'Harvard', // USE XOFFSET AND YOFFSET TO CHANGE LABEL POSITION; optional can be used for styling
+    year: "2011",
+    axes: [
+      {axis: "ranking", value: 1}, 
+      {axis: "studentstaff-ratio", value: 9.5}, 
+      {axis: "research", value: 10},  
+      {axis: "teaching", value: 10},  
+      {axis: "citations", value: 0}
+    ]
+  },
+  {
+    className: 'CalTech',
+    year: "2011",
+    axes: [
+      {axis: "ranking", value: 2}, 
+      {axis: "studentstaff-ratio", value: 0}, 
+      {axis: "research", value: 9.04},  
+      {axis: "teaching", value: 7.72},  
+      {axis: "citations", value: 10}
+    ]
+  },
+  {
+    className: 'MIT',
+    year: "2011",
+    axes: [
+      {axis: "ranking", value: 3}, 
+      {axis: "studentstaff-ratio", value: 10}, 
+      {axis: "research", value: 0},  
+      {axis: "teaching", value: 7.8},  
+      {axis: "citations", value: 10}
+    ]
+  },
+  {
+    className: 'Stanford',
+    axes: [
+      {axis: "ranking", value: 4}, 
+      {axis: "studentstaff-ratio", value: 4.28}, 
+      {axis: "research", value: 9.17},  
+      {axis: "teaching", value: 8.4},  
+      {axis: "citations", value: 3.63}
+    ]
+  },
+  {
+    className: 'Princeton',
+    axes: [
+      {axis: "ranking", value: 5}, 
+      {axis: "studentstaff-ratio", value: 7.14}, 
+      {axis: "research", value: 5.47},  
+      {axis: "teaching", value: 0},  
+      {axis: "citations", value: 10}
+    ]
+  }
+];
+data_2012 = [
+  {
+    className: 'Harvard', // optional can be used for styling
+    year: "2012",
+    axes: [
+      {axis: "ranking", value: 2}, 
+      {axis: "studentstaff-ratio", value: 8.9}, 
+      {axis: "research", value: 9.74},  
+      {axis: "teaching", value: 9.58},  
+      {axis: "citations", value: 9.98}
+    ]
+  },
+  {
+    className: 'CalTech',
+    year: "2012",
+    axes: [
+      {axis: "ranking", value: 1}, 
+      {axis: "studentstaff-ratio", value: 6.9}, 
+      {axis: "research", value: 9.82},  
+      {axis: "teaching", value: 9.57},  
+      {axis: "citations", value: 9.99}
+    ]
+  },
+  {
+    className: 'MIT',
+    year: "2012",
+    axes: [
+      {axis: "ranking", value: 3}, 
+      {axis: "studentstaff-ratio", value: 9}, 
+      {axis: "research", value: 9.14},  
+      {axis: "teaching", value: 9.78},  
+      {axis: "citations", value: 9.99}
+    ]
+  },
+  {
+    className: 'Stanford',
+    axes: [
+      {axis: "ranking", value: 4}, 
+      {axis: "studentstaff-ratio", value: 7.8}, 
+      {axis: "research", value: 9.81},  
+      {axis: "teaching", value: 9.83},  
+      {axis: "citations", value: 9.92}
+    ]
+  },
+  {
+    className: 'Princeton',
+    axes: [
+      {axis: "ranking", value: 5}, 
+      {axis: "studentstaff-ratio", value: 8.4}, 
+      {axis: "research", value: 9.54},  
+      {axis: "teaching", value: 9.09},  
+      {axis: "citations", value: 9.99}
+    ]
+  }
+];*/
+
+function randomDataset(data) {
+  return data.map(function(d) {
+    return {
+      className: d.className,
+      axes: d.axes.map(function(axis) {
+        return {axis: axis.axis, value: axis.value};
+      })
+    };
+  });
+}
+</script>
+
+<!--
+<script>
+  function populate(selector) {
+    $(universities).each(function(d) {
+      var option = $('<option/>');
+      option.attr({'value':d}).text(d);
+      $(selector).append(option);
+    })
+  }
+
+  populate('#college1');
+</script>-->
+<script>
+var chart = RadarChart.chart();
+var cfg = chart.config(); // retrieve default config
+var svg = d3.select('body').append('svg')
+  .attr('width', cfg.w + cfg.w + 50)
+  .attr('height', cfg.h + cfg.h / 4);
+
+$('#selection').on('change', function(e) {
+  var optionSelected = $("option:selected", this);
+  var valueSelected = this.value; 
+  if (valueSelected == 2011) {
+  d3.select("g").remove();
+  svg.append('g').classed('single', 1).datum(randomDataset(data_2011)).call(chart);
+}
+else if (valueSelected == 2012) {
+  d3.select("g").remove();
+  svg.append('g').classed('single', 1).datum(randomDataset(data_2012)).call(chart);
+}
+else if (valueSelected == 2013) {
+  d3.select("g").remove();
+  svg.append('g').classed('single', 1).datum(randomDataset(data_2013)).call(chart);
+}
+else if (valueSelected == 2014) {
+  d3.select("g").remove();
+  svg.append('g').classed('single', 1).datum(randomDataset(data_2014)).call(chart);
+}
+else if (valueSelected == 2015) {
+  d3.select("g").remove();
+  svg.append('g').classed('single', 1).datum(randomDataset(data_2015)).call(chart);
+}
+else if (valueSelected == 2016) {
+  d3.select("g").remove();
+  svg.append('g').classed('single', 1).datum(randomDataset(data_2016)).call(chart);
+}
+})
+
+//var e = document.getElementById('selection').selectedIndex;
+//var strYear = document.getElementsByTagName('option')[e].value;
+
+/*
+var svg2 = d3.select('body').append('svg')
+  .attr('width', cfg.w + cfg.w + 50)
+  .attr('height', cfg.h + cfg.h / 4);
+svg2.append('g').classed('single', 1).datum(randomDataset()).call(chart);
+*/
+/*
+// many radars
+chart.config({w: cfg.w / 5, h: cfg.h / 5, axisText: false, levels: 0, circles: false, showLegend: false});
+cfg = chart.config();
+function render() {
+  var game = svg.selectAll('g.game').data(
+    [
+      randomDataset(data_2012),
+      randomDataset(data_2012),
+      randomDataset(data_2012),
+      randomDataset(data_2012),
+      randomDataset(data_2012)
+    ]
+  );
+  game.enter().append('g').classed('game', 1);
+  game
+    .attr('transform', function(d, i) { return 'translate('+((cfg.w * 4) + 120 + (i * cfg.w))+','+ (cfg.h * 1.3) +')'; })
+    .call(chart);
+
+  //setTimeout(render, 1000);
+}
+
+render();
+*/
+</script>
